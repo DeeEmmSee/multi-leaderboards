@@ -4,7 +4,8 @@
 		<title></title>
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 		<link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
-
+		
+		<!-- Bootstrap JS-->
 		<!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script> -->
@@ -21,6 +22,10 @@
 				transition: transform 1s;
 			}
 
+			.item:hover {
+				background-color: rgba(0, 0, 0, 0.4);
+				cursor: pointer;
+			}
 			.item:nth-child(1) {
 				background-color: #FFD700;
 				font-size: 2.0em;
@@ -32,6 +37,15 @@
 			.item:nth-child(3) {
 				background-color: #CD7F32;
 				font-size: 1.5em;
+			}
+			.item:hover:nth-child(1) {
+				background-color: rgb(255, 215, 0, 0.4);
+			}
+			.item:hover:nth-child(2) {
+				background-color: rgb(192, 192, 192, 0.4);
+			}
+			.item:hover:nth-child(3) {
+				background-color: rgba(205, 127, 50, 0.4);
 			}
 
 			h2 {
@@ -47,17 +61,45 @@
 					<h2>{{board.name}}</h2>
 				</div>
 			</div>
-			
+		
 			<div class="row">
-				<div class="col-sm-12">
-						<span>Total entries: {{items.length}}</span>
+				<div class="col-sm-4">
+						<h4>Add New Entry</h4>
+
+						<div class="form-group">
+							<span>Name</span>
+							<input class="form-control" placeholder="Name" v-model="editedItem.name"></input>
+						</div>
+
+						<div class="form-group" v-if="board.type == 'score'">
+								<span>Score</span>
+								<input class="form-control" placeholder="Score" v-model="editedItem.score"></input>
+						</div>
+
+						<div class="form-group" v-if="board.type == 'time'">
+							<span>Time</span>
+							<input type="number" class="form-control" placeholder="Hours" v-model="editedTime.hours"></input>
+							<input type="number" min="0" max="59" class="form-control" placeholder="Minutes" v-model="editedTime.minutes"></input>
+							<input type="number" min="0" max="59" class="form-control" placeholder="Seconds" v-model="editedTime.seconds"></input>
+							<input type="number" min="0" max="999" class="form-control" placeholder="Milliseconds" v-model="editedTime.milliseconds"></input>
+						</div>
+
+						<div class="form-group">
+							<button class="btn btn-primary" v-on:click="AddItem(editedItem.name, EditedItemComputedScore())">Submit</button>
+						</div>
 				</div>
 			</div>
 
 			<div class="row">
+					<div class="col-sm-12">
+							<span>Total entries: {{items.length}}</span>
+					</div>
+				</div>
+
+			<div class="row">
 				<div class="col-sm-12">
 					
-					<button v-on:click="AddItem()">Click to add random entry</button>
+					<button class="btn btn-primary" v-on:click="AddItem()">Click to add random entry</button>
 					<!-- <button v-on:click="AddLots()">Multi-Add</button> -->
 					 
 					<!--<div v-if="newest != null">
@@ -77,10 +119,11 @@
 							<div class="col-sm-4"><b>Updated</b></div> -->
 						</div>
 						<transition-group tag="div" name="flip-list">
-								<div class="row item" v-for="(item, index) in OrderedItems" v-bind:key="item.name" v-bind:class="index % 2 == 1 ? 'even' : 'odd'" >
+								<div class="row item" v-for="(item, index) in OrderedItems" v-bind:key="item.name" v-bind:class="index % 2 == 1 ? 'even' : 'odd'" v-on:click="EditItem(item)">
 									<div class="col-sm-4"><span v-if="true">{{index + 1}}</span></div>
 									<div class="col-sm-4">{{item.name}}</div>
-									<div class="col-sm-4">{{board.type == "time" ? GetTimeFromScore(item.score) : item.score}}</div>
+									<div class="col-sm-4">{{GetComputedScore(item.score)}}</div>
+									<!-- <div class="col-sm-4">{{board.type == "time" ? TimeFromScore(item.score) : item.score}}</div> -->
 									<!-- <td>{{item.created}}</td>
 									<td>{{item.updated}}</td> -->
 								</div>
