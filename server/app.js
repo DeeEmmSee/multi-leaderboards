@@ -47,6 +47,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 app.use('/scripts', express.static(path.join(__dirname, '../public/scripts')));
+app.use('/css', express.static(path.join(__dirname, '../public/css')));
 
 app.get('/', (req, res) => {
 	res.sendFile('index.html', {root: path.join(__dirname, '../public')});

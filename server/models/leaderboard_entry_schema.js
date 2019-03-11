@@ -6,7 +6,8 @@ const LeaderboardEntrySchema = mongoose.Schema({
     name: { type: String, required: true },
     score: { type: Number, required: true },
     created: { type: Date, default: new Date() },
-    updated: { type: Date, default: new Date() }
+    updated: { type: Date, default: new Date() },
+    expiry: { type: Date, required: false },
 }, {versionKey: false});
 
 //const LeaderboardEntry = mongoose.model('LeaderboardEntry', leaderboardEntrySchema);
