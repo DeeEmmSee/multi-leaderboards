@@ -5,6 +5,7 @@ const leaderboardSchema = mongoose.Schema({
     name: { type: String, required: true },
     identifier: { type: String, required: true },
     type: { type: String, required: true },
+    expiry: { type: Date, default: null },
     created: { type: Date, default: new Date() }
 });
 

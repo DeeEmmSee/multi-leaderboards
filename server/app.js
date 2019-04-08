@@ -44,6 +44,7 @@ db.on('error', function(err){
 
 //Site
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
 app.use('/scripts', express.static(path.join(__dirname, '../public/scripts')));
@@ -55,6 +56,20 @@ app.get('/', (req, res) => {
 
 app.get('/leaderboards/:leaderboard', (req, res) => {
 	res.sendFile('template.html', {root: path.join(__dirname, '../public')});
+});
+
+// API
+app.post('/api/:leaderboard', (req, res) => {
+	var d = new Date();
+	var item = { board_id: req.params.leaderboard, name: req.body.name, score: req.body.score, created: d.toUTCString(), updated: d.toUTCString() };
+	console.log(item);
+	var model = mongoose.model(req.params.leaderboard, LeaderboardEntrySchema);
+
+	model.create(item).then(function(newItem) {
+		GetLeaderboardItems(req.params.leaderboard, true);
+	});
+
+	res.sendStatus(200);
 });
 
 // Sockets
@@ -132,7 +147,7 @@ io.on('connection', function (socket) {
 		
 		//data.name
 		//data.id
-		Leaderboard.create({name: data.name, identifier: data.id, type: data.type}, function(err, res) {
+		Leaderboard.create({name: data.name, identifier: data.id, type: data.type, expiry: data.expiry}, function(err, res) {
 			success = true;
 
 			if (err) {
@@ -153,9 +168,6 @@ io.on('connection', function (socket) {
 	});
 	
 	socket.on('addScoreToLeaderboard', function(data) {
-		// TODO
-		//data.item;
-		//data.leaderboard
 		var model = mongoose.model(data.leaderboardID, LeaderboardEntrySchema);
 
 		model.create(data.item).then(function(newItem) {

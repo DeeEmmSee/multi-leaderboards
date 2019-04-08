@@ -34,7 +34,7 @@
 					
 					<div v-if="leaderboards.length > 0">
 						<ul v-for="board in leaderboards">
-							<li><a v-bind:href="'/leaderboards/' + board.identifier">{{board.name}}</a></li>
+							<li><a v-bind:href="'/leaderboards/' + board.identifier">{{board.name + (board.expiry != null ? ' (E)' : '')}}</a></li>
 						</ul>
 					</div>
 					<div v-if="leaderboards.length == 0">
@@ -57,6 +57,7 @@
 					<div class="form-group">
 						<span>Leaderboard Identifier * (lower case, letters and numbers only)</span>
 						<input type="text" class="form-control" v-model="newBoardID"></input>
+						<span v-if="idError" style="color: red">ID already exists</span>
 					</div>
 					<div class="form-group">
 						<span>Type *</span>
@@ -66,6 +67,11 @@
 						</select>
 					</div>
 					<div class="form-group">
+						<input type="checkbox" v-model="newBoardHasExpiry"></input>
+						<span>Has Expiry?</span>
+					</div>
+
+					<div class="form-group" v-if="newBoardHasExpiry">
 						
 						<div class="row">
 							<div class="col-sm-6">
@@ -167,11 +173,18 @@
 								</select>
 							</div>
 						</div>
+
+						<div class="row">
+							<div class="col-sm-12">
+								<span v-if="expiryError" style="color: red">Date is in the past</span>
+							</div>
+						</div>
 						
 						
 					</div>
 					<div class="form-group">
 						<button class="btn btn-primary" v-on:click="createNewLeaderboard(newBoardName, newBoardID, newBoardType, newBoardExpiryDate, newBoardExpiryTimeHours, newBoardExpiryTimeMinutes)">Create</button>
+						<span v-if="submitSuccess">Leaderboard Added!</span>
 					</div>
 				</div>
 			</div>
