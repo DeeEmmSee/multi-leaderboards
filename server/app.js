@@ -63,10 +63,26 @@ app.post('/api/:leaderboard', (req, res) => {
 	var d = new Date();
 	var item = { board_id: req.params.leaderboard, name: req.body.name, score: req.body.score, created: d.toUTCString(), updated: d.toUTCString() };
 	console.log(item);
+
+	console.log(req);
+
 	var model = mongoose.model(req.params.leaderboard, LeaderboardEntrySchema);
 
 	model.create(item).then(function(newItem) {
-		GetLeaderboardItems(req.params.leaderboard, true);
+		model.find({"board_id": req.params.leaderboard}, function(err, items) {
+			var error = null;
+
+			if (err) {
+				error = err;
+			}
+			else if (items.length == 0) {
+				error = "No items found";
+			}
+
+			io.emit("leaderboardItems", {items: items});
+			
+			res.sendStatus(200);
+		});
 	});
 
 	res.sendStatus(200);
