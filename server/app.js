@@ -16,8 +16,7 @@ const LeaderboardEntrySchema = require('./models/leaderboard_entry_schema');
 // Mongoose
 const mongoose = require('mongoose');
 //mongoose.connect('mongodb+srv://root:yoceda0YVS3mT4De@cluster0-dxypd.mongodb.net/db_leaderboards?retryWrites=true', {useNewUrlParser: true});
-mongoose.connect('mongodb+srv://leaderboard_user:ir3nDqp0XwnXEMoK@cluster0-dxypd.mongodb.net/db_leaderboards?retryWrites=true', {useNewUrlParser: true});
-
+mongoose.connect('mongodb+srv://leaderboard_user:ir3nDqp0XwnXEMoK@cluster0-dxypd.mongodb.net/db_leaderboards?retryWrites=true', { useNewUrlParser: true });
 
 mongoose.Promise = global.Promise;
 

@@ -11,11 +11,21 @@ var vue_board_app = new Vue({
 		board: {},
 		editedItem: {},
 		editedTime: {
+			days: 0,
 			hours: 0,
 			minutes: 0,
 			seconds: 0,
-			milliseconds: 0,
-		}
+			//milliseconds: 0,
+		},
+		expiryTime: {
+			days: 0,
+			hours: 0,
+			minutes: 0,
+			seconds: 0,
+			//milliseconds: 0,
+		},
+		timerInterval: null,
+		loading: true
 	},
 	computed: {
 		OrderedItems: function() {
@@ -27,6 +37,17 @@ var vue_board_app = new Vue({
 
 			return _.orderBy(this.items, "score", scoreSort);
 		},
+		ExpiryTime: function(){
+			if (this.board.type == 'time' && this.board.expiry != null) {
+				return this.expiryTime.days + ":" + this.expiryTime.hours + ":" + this.expiryTime.minutes + ":" + this.expiryTime.seconds;
+			}
+			else{
+				return null;
+			}
+		},
+		TimeExpired: function(){
+			return this.expiryTime.days == 0 && this.expiryTime.hours == 0 && this.expiryTime.minutes == 0 && this.expiryTime.seconds == 0
+		}
 	},
 	methods: {
 		// AddLots: function() {
@@ -195,8 +216,49 @@ var vue_board_app = new Vue({
 		// Use Vue object name to assign variables
 
 		// Socket responses from server
-		socket.on('requestLeaderboard', function(data){
+		socket.on('requestLeaderboard', function(data) {
 			vue_board_app.board = data.board;
+
+			// Countdown
+			if (vue_board_app.board.type == 'time' && vue_board_app.board.expiry != null) {
+				var eventTime = moment(new Date(vue_board_app.board.expiry).getTime()).unix(),
+				currentTime = moment(new Date().getTime()).unix(),
+				diffTime = eventTime - currentTime,
+				duration = moment.duration(diffTime * 1000, 'milliseconds'),
+				interval = 1000;
+
+				//$clock = $('#clock'),
+
+				if (diffTime > 0) {
+					vue_board_app.timerInterval = setInterval(function() {
+
+						duration = moment.duration(duration.asMilliseconds() - interval, 'milliseconds');
+						var d = moment.duration(duration).days(),
+							h = moment.duration(duration).hours(),
+							m = moment.duration(duration).minutes(),
+							s = moment.duration(duration).seconds();
+							//ms = moment.duration(duration).milliSeconds();
+						
+						d = $.trim(d).length === 1 ? '0' + d : d;
+						h = $.trim(h).length === 1 ? '0' + h : h;
+						m = $.trim(m).length === 1 ? '0' + m : m;
+						s = $.trim(s).length === 1 ? '0' + s : s;
+						//ms = $.trimm(s).length === 1 ? '0' + ms : ms;
+						
+						// show how many hours, minutes and seconds are left
+						vue_board_app.expiryTime.days = d;
+						vue_board_app.expiryTime.hours = h;
+						vue_board_app.expiryTime.minutes = m;
+						vue_board_app.expiryTime.seconds = s;
+						//vue_board_app.expiryTime.milliseconds = ms;
+					}, interval);
+				}
+				else {
+					vue_board_app.timerInterval = null;
+				}
+			}
+
+			vue_board_app.loading = false;
 		});
 
 		socket.on('leaderboardItems', function(data){

@@ -11,6 +11,9 @@
 		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script> -->
 
 		<script type="text/javascript" src="/scripts/jquery-3.3.1.min.js"></script>
+		<script type="text/javascript" src="/scripts/jquery-ui.min.js"></script>
+		
+		<script type="text/javascript" src="/scripts/moment.js"></script>
 		<script type="text/javascript" src="/scripts/lodash.min.js"></script>
 		<!-- <script type="text/javascript" src="/scripts/velocity.min.js"></script> -->
 		<script type="text/javascript" src="/scripts/vue.min.js"></script>
@@ -56,101 +59,111 @@
 </head>
 <body>
     <div id="board" class="container">
-		<div v-if="board != null">
-			<div class="row">
-				<div class="col-sm-12">
-					<h2>{{board.name}}</h2>
-				</div>
-			</div>
-
-			<div class="row">
-				<div class="col-sm-12">
-					<h2>Expires: {{board.expiry}}</h2>
-				</div>
-			</div>
-		
-			<div class="row">
-				<div class="col-sm-4">
-						<h4>Add New Entry</h4>
-
-						<div class="form-group">
-							<span>Name</span>
-							<input class="form-control" placeholder="Name" v-model="editedItem.name"></input>
-						</div>
-
-						<div class="form-group" v-if="board.type == 'score'">
-								<span>Score</span>
-								<input class="form-control" placeholder="Score" v-model="editedItem.score"></input>
-						</div>
-
-						<div class="form-group" v-if="board.type == 'time'">
-							<span>Time</span>
-							<input type="number" class="form-control" placeholder="Hours" v-model="editedTime.hours"></input>
-							<input type="number" min="0" max="59" class="form-control" placeholder="Minutes" v-model="editedTime.minutes"></input>
-							<input type="number" min="0" max="59" class="form-control" placeholder="Seconds" v-model="editedTime.seconds"></input>
-							<input type="number" min="0" max="999" class="form-control" placeholder="Milliseconds" v-model="editedTime.milliseconds"></input>
-						</div>
-					
-						<div class="form-group">
-							<button class="btn btn-primary" v-on:click="AddItem(editedItem.name, EditedItemComputedScore())">Submit</button>
-						</div>
-				</div>
-			</div>
-
-			<div class="row">
+		<div>
+			<a href="/">Home</a>
+		</div>
+		<div v-if="!loading">
+			<div v-if="board != null">
+				<div class="row">
 					<div class="col-sm-12">
-							<span>Total entries: {{items.length}}</span>
+						<h2>{{board.name}}</h2>
 					</div>
 				</div>
 
-			<div class="row">
-				<div class="col-sm-12">
-					
-					<button class="btn btn-primary" v-on:click="AddItem()">Click to add random entry</button>
-					<!-- <button v-on:click="AddLots()">Multi-Add</button> -->
-					 
-					<!--<div v-if="newest != null">
-						Newest: {{newest.name + ' ' + newest.score + ' ' + newest.addedDate}}
-					</div>-->
-
-					<div v-if="latest != null">
-						Latest: {{latest.name + ' ' + latest.score + ' ' + latest.updated}}
+				<div class="row">
+					<div class="col-sm-12">
+						<h2 v-if="!TimeExpired">Expires: {{ExpiryTime}}</h2>
+						<h2 v-if="TimeExpired">EXPIRED</h2>
 					</div>
-					 
-					<div class="container">
-						<div class="row">
-							<div class="col-sm-4"><b>Position</b></div>
-							<div class="col-sm-4"><b>Name</b></div>
-							<div class="col-sm-4"><b>Score</b></div>
-							<!-- <div class="col-sm-4"><b>Created</b></div>
-							<div class="col-sm-4"><b>Updated</b></div> -->
+				</div>
+			
+				<div class="row">
+					<div class="col-sm-4">
+							<h4>Add New Entry</h4>
+
+							<div class="form-group">
+								<span>Name</span>
+								<input class="form-control" placeholder="Name" v-model="editedItem.name"></input>
+							</div>
+
+							<div class="form-group" v-if="board.type == 'score'">
+									<span>Score</span>
+									<input class="form-control" placeholder="Score" v-model="editedItem.score"></input>
+							</div>
+
+							<div class="form-group" v-if="board.type == 'time'">
+								<span>Time</span>
+								<input type="number" class="form-control" placeholder="Days" v-model="editedTime.days"></input>
+								<input type="number" min="0" max="23" class="form-control" placeholder="Hours" v-model="editedTime.hours"></input>
+								<input type="number" min="0" max="59" class="form-control" placeholder="Minutes" v-model="editedTime.minutes"></input>
+								<input type="number" min="0" max="59" class="form-control" placeholder="Seconds" v-model="editedTime.seconds"></input>
+								<!--<input type="number" min="0" max="999" class="form-control" placeholder="Milliseconds" v-model="editedTime.milliseconds"></input>-->
+							</div>
+						
+							<div class="form-group">
+								<button class="btn btn-primary" v-on:click="AddItem(editedItem.name, EditedItemComputedScore())">Submit</button>
+							</div>
+					</div>
+				</div>
+
+				<div class="row">
+						<div class="col-sm-12">
+								<span>Total entries: {{items.length}}</span>
 						</div>
-						<transition-group tag="div" name="flip-list">
-								<div class="row item" v-for="(item, index) in OrderedItems" v-bind:key="item.name" v-bind:class="index % 2 == 1 ? 'even' : 'odd'" v-on:click="EditItem(item)">
-									<div class="col-sm-4"><span v-if="true">{{index + 1}}</span></div>
-									<div class="col-sm-4">{{item.name}}</div>
-									<div class="col-sm-4">{{GetComputedScore(item.score)}}</div>
-									<!-- <div class="col-sm-4">{{board.type == "time" ? TimeFromScore(item.score) : item.score}}</div> -->
-									<!-- <td>{{item.created}}</td>
-									<td>{{item.updated}}</td> -->
-								</div>
-						</transition-group>
 					</div>
 
-					<div v-if="items.length == 0">
-						No entries
-					</div>
+				<div class="row">
+					<div class="col-sm-12">
+						
+						<button class="btn btn-primary" v-on:click="AddItem()">Click to add random entry</button>
+						<!-- <button v-on:click="AddLots()">Multi-Add</button> -->
+						
+						<!--<div v-if="newest != null">
+							Newest: {{newest.name + ' ' + newest.score + ' ' + newest.addedDate}}
+						</div>-->
 
-					<div v-if="logs.length > 0">
-						<ul v-for="log in logs">
-							<li>{{log.info + " " + log.datetimestamp}}</li>
-						</ul>
+						<div v-if="latest != null">
+							Latest: {{latest.name + ' ' + latest.score + ' ' + latest.updated}}
+						</div>
+						
+						<div class="container">
+							<div class="row">
+								<div class="col-sm-4"><b>Position</b></div>
+								<div class="col-sm-4"><b>Name</b></div>
+								<div class="col-sm-4"><b>Score</b></div>
+								<!-- <div class="col-sm-4"><b>Created</b></div>
+								<div class="col-sm-4"><b>Updated</b></div> -->
+							</div>
+							<transition-group tag="div" name="flip-list">
+									<div class="row item" v-for="(item, index) in OrderedItems" v-bind:key="item.name" v-bind:class="index % 2 == 1 ? 'even' : 'odd'" v-on:click="EditItem(item)">
+										<div class="col-sm-4"><span v-if="true">{{index + 1}}</span></div>
+										<div class="col-sm-4">{{item.name}}</div>
+										<div class="col-sm-4">{{GetComputedScore(item.score)}}</div>
+										<!-- <div class="col-sm-4">{{board.type == "time" ? TimeFromScore(item.score) : item.score}}</div> -->
+										<!-- <td>{{item.created}}</td>
+										<td>{{item.updated}}</td> -->
+									</div>
+							</transition-group>
+						</div>
+
+						<div v-if="items.length == 0">
+							No entries
+						</div>
+
+						<div v-if="logs.length > 0">
+							<ul v-for="log in logs">
+								<li>{{log.info + " " + log.datetimestamp}}</li>
+							</ul>
+						</div>
 					</div>
 				</div>
+			</div>
+			<div v-if="board == null">
+				Leaderboard does not exist.
 			</div>
 		</div>
-		<div v-if="board == null">
-			Leaderboard does not exist.
+		<div v-if="loading">
+			Loading...
 		</div>
     </div>
    
