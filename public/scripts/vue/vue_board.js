@@ -25,7 +25,9 @@ var vue_board_app = new Vue({
 			//milliseconds: 0,
 		},
 		timerInterval: null,
-		loading: true
+		loading: true,
+		isAdmin: false,
+		txtAdminPassword: ''
 	},
 	computed: {
 		OrderedItems: function() {
@@ -55,6 +57,10 @@ var vue_board_app = new Vue({
 		// 		this.AddItem("Name " + i, Math.floor(Math.random() * 100));
 		// 	}
 		// },
+		AdminCheck: function() {
+			this.isAdmin = this.txtAdminPassword == "Password123";
+			this.txtAdminPassword = "";
+		},
 		AddItem: function(name, score) {
 			
 			if (name == null || name == "" || score == null) {
@@ -68,7 +74,13 @@ var vue_board_app = new Vue({
 			if (index != -1) {
 
 				//if (this.board.type == "score" && score > this.items[index].score || this.board.type == "time" && score < this.items[index].score) { 
-					this.logs.push({info: "Updated " + name + ": Old score: " + this.GetTimeString(this.TimeFromScore(this.items[index].score)) + " New score: " + this.GetTimeString(this.TimeFromScore(score)), datetimestamp: d.toUTCString()} );
+					if (this.board.type == 'time') {
+						this.logs.push({info: "Updated " + name + ": Old score: " + this.GetTimeString(this.TimeFromScore(this.items[index].score)) + " New score: " + this.GetTimeString(this.TimeFromScore(score)), datetimestamp: d.toUTCString()} );
+					}
+					else {
+						this.logs.push({info: "Updated " + name + ": Old score: " + this.items[index].score + " New score: " + score, datetimestamp: d.toUTCString()} );
+					}
+					
 				
 					this.items[index].score = score;
 					this.items[index].updated = d.toUTCString();
@@ -84,8 +96,13 @@ var vue_board_app = new Vue({
 			else {
 				var item = {board_id: this.board.identifier, name: name, score: score, created: d.toUTCString(), updated: d.toUTCString()};
 				this.latest = this.newest;
-				this.logs.push({info: "Inserted " + name + " Score: " + this.GetTimeString(this.TimeFromScore(score)), datetimestamp: d.toUTCString()});
 
+				if (this.board.type == 'time') {
+					this.logs.push({info: "Inserted " + name + " Score: " + this.GetTimeString(this.TimeFromScore(score)), datetimestamp: d.toUTCString()});
+				}
+				else {
+					this.logs.push({info: "Inserted " + name + " Score: " + score, datetimestamp: d.toUTCString()});
+				}
 				socket.emit("addScoreToLeaderboard", {item: item, leaderboardID: this.board.identifier});
 			}
 		   

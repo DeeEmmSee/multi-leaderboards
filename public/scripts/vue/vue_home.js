@@ -14,9 +14,15 @@ var vue_home_app = new Vue({
 		newBoardHasExpiry: false,
 		idError: false,
 		expiryError: false,
-		submitSuccess: false
+		submitSuccess: false,
+		isAdmin: false,
+		txtAdminPassword: ''
 	},
 	methods: {
+		AdminCheck: function() {
+			this.isAdmin = this.txtAdminPassword == "Password123";
+			this.txtAdminPassword = "";
+		},
 		getLeaderboards: function() {
 			socket.emit("requestLeaderboards");
 		},
