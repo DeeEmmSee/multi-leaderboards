@@ -223,8 +223,8 @@ var vue_board_app = new Vue({
 		}
 	},
 	created: function() {
-		//socket = io.connect('http://localhost:3000');
-		socket = io();
+		socket = io.connect('http://chaplint.co.uk:8081');
+		//socket = io();
 	},
 	mounted: function() {
 		var id = window.location.href.substr(window.location.href.lastIndexOf('/') + 1); // "board1";

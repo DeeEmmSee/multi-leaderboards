@@ -4,21 +4,22 @@
 	<title>Leaderboard Manager</title>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 	<link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
-	<link type="text/css" rel="stylesheet" href="/css/styles.css" />
-	<link type="text/css" rel="stylesheet" href="/css/jquery-ui.css" />
+	<link type="text/css" rel="stylesheet" href="css/styles.css" />
+	<link type="text/css" rel="stylesheet" href="css/jquery-ui.css" />
 
-	<script type="text/javascript" src="/scripts/jquery-3.3.1.min.js"></script>
-	<script type="text/javascript" src="/scripts/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="scripts/jquery-3.3.1.min.js"></script>
+	<script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
-	<script type="text/javascript" src="/scripts/moment.js"></script>
-	<script type="text/javascript" src="/scripts/lodash.min.js"></script>
-	<script type="text/javascript" src="/scripts/velocity.min.js"></script>
-	<script type="text/javascript" src="/scripts/vue.min.js"></script>
-	<script type="text/javascript" src="/scripts/socket.io.slim.js"></script>
-	<script type="text/javascript" src="/scripts/main.js"></script>
+	<script type="text/javascript" src="scripts/moment.js"></script>
+	<script type="text/javascript" src="scripts/lodash.min.js"></script>
+	<script type="text/javascript" src="scripts/velocity.min.js"></script>
+	<script type="text/javascript" src="scripts/vue.min.js"></script>
+	<script type="text/javascript" src="scripts/socket.io.slim.js"></script>
+	<!--<script type="text/javascript" src="static/socket.io/node_modules/socket.io-client/socket.io.js"></script>-->
+	<script type="text/javascript" src="scripts/main.js"></script>
 </head>
 <body>
     <div id="home" class="container">
@@ -34,7 +35,7 @@
 					
 					<div v-if="leaderboards.length > 0">
 						<ul v-for="board in leaderboards">
-							<li><a v-bind:href="'/leaderboards/' + board.identifier">{{board.name + (board.expiry != null ? ' (E)' : '')}}</a></li>
+							<li><a v-bind:href="'/leaderboards/leaderboards/' + board.identifier">{{board.name + (board.expiry != null ? ' (E)' : '')}}</a></li>
 						</ul>
 					</div>
 					<div v-if="leaderboards.length == 0">
@@ -201,6 +202,6 @@
 		
     </div>
    
-    <script src="/scripts/vue/vue_home.js"></script>
+    <script src="scripts/vue/vue_home.js"></script>
 </body>
 </html>

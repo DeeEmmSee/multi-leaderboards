@@ -2,11 +2,11 @@
   "name": "leaderboards",
   "version": "1.0.0",
   "description": "Leaderboards application",
-  "main": "app.js",
+  "main": "leaderboards.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server/app.js",
-    "dev": "nodemon server/app.js"
+    "start": "node server/leaderboards.js",
+    "dev": "nodemon server/leaderboards.js"
   },
   "author": "",
   "license": "ISC",
@@ -18,10 +18,9 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "mongoose": "^5.10.5",
+    "nodemon": "^2.0.4",
     "socket.io": "^2.3.0",
     "vue-router": "^3.4.3"
   },
-  "devDependencies": {
-    "nodemon": "^1.19.4"
-  }
+  "devDependencies": {}
 }

@@ -6,7 +6,8 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
 
-const PORT = process.env.PORT || 3000;
+const PORT = 8081;
+const baseUrl = '/leaderboards';
 
 // Schema
 const Leaderboard = require('./models/leaderboards');
@@ -46,19 +47,22 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
-app.use('/scripts', express.static(path.join(__dirname, '../public/scripts')));
-app.use('/css', express.static(path.join(__dirname, '../public/css')));
+app.use(baseUrl + '/scripts', express.static(path.join(__dirname, '../public/scripts')));
+app.use(baseUrl + '/css', express.static(path.join(__dirname, '../public/css')));
+app.use(baseUrl + '/static', express.static('node_modules'));
 
-app.get('/', (req, res) => {
+var router = express.Router();
+
+router.get('/', (req, res) => {
 	res.sendFile('index.html', {root: path.join(__dirname, '../public')});
 });
 
-app.get('/leaderboards/:leaderboard', (req, res) => {
+router.get('/leaderboards/:leaderboard', (req, res) => {
 	res.sendFile('template.html', {root: path.join(__dirname, '../public')});
 });
 
 // API
-app.post('/api/:leaderboard', (req, res) => {
+router.post('/api/:leaderboard', (req, res) => {
 	var d = new Date();
 	var item = { board_id: req.params.leaderboard, name: req.body.name, score: req.body.score, created: d.toUTCString(), updated: d.toUTCString() };
 	console.log(item);
@@ -86,6 +90,8 @@ app.post('/api/:leaderboard', (req, res) => {
 
 	res.sendStatus(200);
 });
+
+app.use(baseUrl, router);
 
 // Sockets
 io.on('connection', function (socket) {	
