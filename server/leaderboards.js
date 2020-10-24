@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
 
-const PORT = 8081;
+const PORT = 3000;
 const baseUrl = '/leaderboards';
 
 // Schema
@@ -62,6 +62,49 @@ router.get('/leaderboards/:leaderboard', (req, res) => {
 });
 
 // API
+router.get('/api/:leaderboard', (req, res) => {
+	/*Leaderboard.find({"identifier": req.body.id}, function(err, boards) {
+		var error = null;
+		var board = null;
+
+		if (err) {
+			error = err;
+		}
+		else if (boards.length == 0) {
+			error = "No board found";
+		}
+		else {
+			board = boards[0];
+		}
+
+		var model = mongoose.model(leaderboardID, LeaderboardEntrySchema);
+
+		model.find({"board_id": leaderboardID}, function(err, items) {
+			var error = null;
+
+			if (err) {
+				error = err;
+			}
+			else if (items.length == 0) {
+				error = "No items found";
+			}
+
+			
+		});
+	});*/
+
+	res.sendStatus(200);
+});
+
+router.get('/api/:leaderboard/best', (req, res) => {
+	var model = mongoose.model(req.params.leaderboard, LeaderboardEntrySchema);
+
+	model.findOne({"board_id": req.params.leaderboard}).sort({score: -1}).exec(function(err, item) {
+		res.send(`${item.score}`);
+	});
+	
+});
+
 router.post('/api/:leaderboard', (req, res) => {
 	var d = new Date();
 	var item = { board_id: req.params.leaderboard, name: req.body.name, score: req.body.score, created: d.toUTCString(), updated: d.toUTCString() };
